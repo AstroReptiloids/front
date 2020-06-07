@@ -1,10 +1,5 @@
 <template>
     <v-app id="inspire">
-        <v-app-bar app flat>
-            <v-toolbar-title>Microchats</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <slot name="toolbar_items"></slot>
-        </v-app-bar>
         <v-content style="height: 100vh;">
             <transition name="fade" mode="out-in">
                 <slot></slot>
@@ -15,7 +10,7 @@
 
 <script>
 export default {
-  name: 'MainLayoutBase'
+  name: 'MinimalLayoutBase'
 }
 </script>
 

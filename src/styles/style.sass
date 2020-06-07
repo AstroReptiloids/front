@@ -1,0 +1,17 @@
+@import '~vuetify/src/styles/styles.sass'
+
+input, textarea, .body-1, .body-2
+  font-weight: 300 !important
+
+.title, .headline, .display-1, .subtitle-1, .subtitle-2
+  font-weight: 700 !important
+
+.my-transition
+  &-leave-active
+    position: absolute
+
+  &-enter-active, &-leave, &-leave-to
+    transition: $primary-transition
+
+  &-enter, &-leave-to
+    opacity: 0

@@ -18,6 +18,14 @@ const routes = [
     }
   },
   {
+    path: '/login',
+    name: 'login',
+    components: {
+      default: () => import('@/ui/views/LoginView'),
+      layout: () => import('@/ui/layouts/MinimalLayoutBase')
+    }
+  },
+  {
     path: '/page1',
     name: 'page1',
     components: {
