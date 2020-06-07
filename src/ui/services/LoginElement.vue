@@ -21,11 +21,11 @@
           <v-card style="padding: 80px" tile>
             <div class="display-2 my-8 ml-n1">Microchats</div>
             <div class="title my-4">Авторизация</div>
-            <v-text-field dense outlined label="Логин"/>
-            <v-text-field dense outlined label="Пароль"/>
+            <v-text-field v-model="login" dense outlined label="Логин"/>
+            <v-text-field v-model="password" dense outlined label="Пароль" type="password"/>
             <v-row class="ma-0">
               <v-spacer/>
-              <v-btn depressed color="primary">Войти</v-btn>
+              <v-btn @click="auth" depressed color="primary">Войти</v-btn>
             </v-row>
           </v-card>
         </v-col>
@@ -34,7 +34,33 @@
 
 <script>
 export default {
-  name: 'LoginElement>'
+  name: 'LoginElement',
+  data: () => ({
+    login: 'ivan',
+    password: 'qwe'
+  }),
+  methods: {
+    async auth () {
+      const res = await this.$axios('auth/login', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': '*',
+          'Access-Control-Allow-Methods': '*'
+        },
+        data: {
+          login: this.login,
+          password: this.password
+        }
+      })
+      if (res && res.data && res.data.data && res.data.data.token) {
+        localStorage.setItem('microchatsToken', res.data.data.token)
+        this.$axios.defaults.headers.common.Authorization = res.data.data.token
+        this.$router.push('/')
+      }
+    }
+  }
 }
 </script>
 

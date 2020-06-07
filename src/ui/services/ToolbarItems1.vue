@@ -1,10 +1,18 @@
 <template>
-  <v-btn>YO1</v-btn>
+  <v-btn depressed @click="logout">Выйти</v-btn>
 </template>
 
 <script>
 export default {
-  name: 'ToolbarItems1'
+  name: 'ToolbarItems1',
+  methods: {
+    logout () {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('microchatsToken')
+      }
+      this.$router.push('/login')
+    }
+  }
 }
 </script>
 
