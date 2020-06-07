@@ -9,6 +9,7 @@ export default {
     logout () {
       if (typeof localStorage !== 'undefined') {
         localStorage.removeItem('microchatsToken')
+        localStorage.removeItem('microchatsUserId')
       }
       this.$router.push('/login')
     }

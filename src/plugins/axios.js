@@ -9,9 +9,15 @@ if (localStorage && localStorage.getItem('microchatsToken')) {
   axios.defaults.headers.common.Authorization = localStorage.getItem('microchatsToken')
 }
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+// headers: {
+// axios.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest'
+// axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
+// axios.defaults.headers.post['Access-Control-Allow-Headers'] = '*'
+// axios.defaults.headers.post['Access-Control-Allow-Methods'] = '*'
+// },
 
 const config = {
-  baseURL: process.env.baseURL || process.env.apiUrl || 'http://localhost:3001'
+  baseURL: process.env.baseURL || process.env.apiUrl || 'http://localhost:3000'
   // timeout: 60 * 1000, // Timeout
   // withCredentials: true // Check cross-site Access-Control
 }

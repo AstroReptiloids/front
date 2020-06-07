@@ -36,8 +36,8 @@
 export default {
   name: 'LoginElement',
   data: () => ({
-    login: 'ivan',
-    password: 'qwe'
+    login: '',
+    password: ''
   }),
   methods: {
     async auth () {
@@ -56,6 +56,7 @@ export default {
       })
       if (res && res.data && res.data.data && res.data.data.token) {
         localStorage.setItem('microchatsToken', res.data.data.token)
+        localStorage.setItem('microchatsUserId', res.data.data.user_id)
         this.$axios.defaults.headers.common.Authorization = res.data.data.token
         this.$router.push('/')
       }
