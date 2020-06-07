@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d23721e"],{fa8e:function(n,e,t){"use strict";t.r(e);var a=function(){var n=this,e=n.$createElement,t=n._self._c||e;return t("v-btn",[n._v("YO2")])},c=[],o={name:"ToolbarItems2"},r=o,s=t("2877"),u=t("6544"),l=t.n(u),b=t("8336"),i=Object(s["a"])(r,a,c,!1,null,"b4c12bd6",null);e["default"]=i.exports;l()(i,{VBtn:b["a"]})}}]);
+//# sourceMappingURL=chunk-2d23721e.58ce05d6.js.map
