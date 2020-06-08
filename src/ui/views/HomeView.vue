@@ -104,9 +104,6 @@ export default {
   computed: {
     getCurrentUserId () {
       return localStorage.getItem('microchatsUserId')
-    },
-    pageHeight () {
-      return document.body.scrollHeight
     }
   },
   async created () {
@@ -118,7 +115,7 @@ export default {
     this.currentChat = 1
     await this.fetchMessages()
 
-    await this.resetScrollMessages()
+    // await this.resetScrollMessages()
     await this.scrollMessagesToEnd()
   },
   methods: {
@@ -130,6 +127,7 @@ export default {
     },
     connectWebSockets () {
       this.socket = new WebSocket('ws://localhost:3000/socket')
+
       this.socket.onopen = (e) => {
         console.log('[open] Соединение установлено')
         console.log('Отправляем данные на сервер')
@@ -138,8 +136,16 @@ export default {
         }))
       }
 
-      this.socket.onmessage = (event) => {
+      this.socket.onmessage = async (event) => {
         console.log(`[message] Данные получены с сервера: ${event.data}`)
+        const res = JSON.parse(event.data)
+        if (res && res.message && res.user) {
+          this.items.push({
+            ...res.message,
+            user: res.user
+          })
+          await this.scrollMessagesToEnd()
+        }
       }
 
       this.socket.onclose = (event) => {
@@ -235,7 +241,7 @@ export default {
     async selectChat (chat) {
       this.chatId = chat.id
       await this.fetchMessages()
-      await this.resetScrollMessages()
+      // await this.resetScrollMessages()
       await this.scrollMessagesToEnd()
     },
     async send () {
@@ -258,10 +264,10 @@ export default {
         }
       })
       if (res && res.data && res.data.data) {
-        this.items.push({
-          ...res.data.data,
-          user: this.currentUser
-        })
+        // this.items.push({
+        //   ...res.data.data,
+        //   user: this.currentUser
+        // })
         this.newMessage = ''
 
         await this.scrollMessagesToEnd()
