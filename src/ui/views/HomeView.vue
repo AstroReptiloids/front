@@ -3,20 +3,22 @@
     <v-col class="ma-0 fill-height" cols="3" v-if="chats" style="overflow-y: auto; height: calc(100vh - 152px);">
 
       <v-list three-line>
-        <template v-for="(chat, i) in chats">
-          <v-list-item :key="`chat-${i}`" @click="selectChat(chat)" :style="chat.id === chatId ? 'background-color: #e2e9f3' : ''">
-            <v-list-item-avatar>
-              <v-img :src="getUserAvatar(chat.creator)"></v-img>
-            </v-list-item-avatar>
+        <v-list-item-group v-model="currentChat" color="primary" mandatory>
+          <template v-for="(chat, i) in chats">
+            <v-list-item :key="`chat-${i}`" @click="selectChat(chat)">
+              <v-list-item-avatar>
+                <v-img :src="getUserAvatar(chat.creator)"></v-img>
+              </v-list-item-avatar>
 
-            <v-list-item-content>
-              <v-list-item-title class="subtitle-2" v-html="chat.title"></v-list-item-title>
-              <v-list-item-subtitle class="body-2" v-html="chat.description"></v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="subtitle-2" v-html="chat.title"></v-list-item-title>
+                <v-list-item-subtitle class="body-2" v-html="chat.description"></v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
 
-          <v-divider v-if="i + 1 < chats.length" :key="`divider-${i}`" inset/>
-        </template>
+            <v-divider v-if="i + 1 < chats.length" :key="`divider-${i}`" inset/>
+          </template>
+        </v-list-item-group>
       </v-list>
 
     </v-col>
@@ -27,7 +29,7 @@
            class="ma-0"
     >
       <v-spacer v-if="isOwn(item)"/>
-      <v-card :class="`px-4 pb-4 pt-2 ma-4 ${isOwn(item) ? '' : 'no-'}my-message`">
+      <v-card flat :class="`px-4 pb-4 pt-2 ma-4 ${isOwn(item) ? '' : 'no-'}my-message`">
         <v-list-item class="mt-3">
           <v-list-item-avatar>
             <v-img :src="getUserAvatar(item.user)"></v-img>
@@ -59,6 +61,7 @@
                         hide-details
                         placeholder="Напишите сообщение..."
                         class="footer-input mr-4"
+                        @keypress.enter="send"
           />
           <v-btn rounded
                  class="my-2"
@@ -81,7 +84,8 @@ export default {
     socket: null,
     items: null,
     chats: null,
-    currentChat: {
+    currentChat: null,
+    currentChats: {
       type: 'category',
       id: '65a69740-ddab-4d26-b1dd-81c28fd3d877'
     },
@@ -100,9 +104,10 @@ export default {
   },
   async created () {
     this.connectWebSockets()
-    await this.fetchMessages()
-    await this.fetchChats()
     await this.fetchCurrentUser()
+    await this.fetchChats()
+    this.currentChat = 1
+    await this.fetchMessages()
   },
   methods: {
     isOwn (item) {
@@ -259,12 +264,12 @@ export default {
 <style scoped>
 .my-message {
   border-radius: 4px 24px 0 24px !important;
-  filter: drop-shadow(1px 2px 2px #00000023);
+  filter: drop-shadow(1px 3px 2px #00000030);
 }
 .my-message:after {
   content: '';
   position: absolute;
-  bottom: 1px;
+  bottom: 0;
   right: 0;
   width: 0;
   height: 0;
@@ -274,16 +279,15 @@ export default {
   border-right: 0;
   margin-left: -0.75em;
   margin-bottom: -1.5em;
-  filter: drop-shadow(1px 2px 2px #00000023);
 }
 .no-my-message {
   border-radius: 24px 4px 24px 0 !important;
-  filter: drop-shadow(1px 2px 2px #00000023);
+  filter: drop-shadow(1px 3px 2px #00000030);
 }
 .no-my-message:before {
   content: '';
   position: absolute;
-  bottom: 1px;
+  bottom: 0;
   left: 0;
   width: 0;
   height: 0;
@@ -293,7 +297,6 @@ export default {
   border-left: 0;
   margin-right: -0.75em;
   margin-bottom: -1.5em;
-  filter: drop-shadow(1px 2px 2px #00000023);
 }
 </style>
 
