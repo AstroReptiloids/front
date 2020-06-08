@@ -167,14 +167,7 @@ export default {
       }
     },
     async fetchMessages () {
-      const res = await this.$axios('messages', {
-        method: 'GET',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': '*',
-          'Access-Control-Allow-Methods': '*'
-        },
+      const res = await this.$axios.get('messages', {
         params: {
           microchat_id: this.chatId
         }
@@ -184,15 +177,8 @@ export default {
       }
     },
     async fetchChats () {
-      const res = await this.$axios('microchats', {
-        method: 'GET',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': '*',
-          'Access-Control-Allow-Methods': '*'
-        }
-        // query: {
+      const res = await this.$axios.get('microchats', {
+        // params: {
         //   category_id: this.categoryId
         // }
       })
@@ -201,15 +187,7 @@ export default {
       }
     },
     async fetchCurrentUser () {
-      const res = await this.$axios(`users/${this.getCurrentUserId}`, {
-        method: 'GET',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': '*',
-          'Access-Control-Allow-Methods': '*'
-        }
-      })
+      const res = await this.$axios.get(`users/${this.getCurrentUserId}`)
       if (res && res.data && res.data.data) {
         this.currentUser = res.data.data
       }
@@ -249,19 +227,10 @@ export default {
         return
       }
 
-      const res = await this.$axios('messages', {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': '*',
-          'Access-Control-Allow-Methods': '*'
-        },
-        data: {
-          text: this.newMessage,
-          microchat_id: this.chatId,
-          user_id: localStorage.getItem('microchatsToken')
-        }
+      const res = await this.$axios.post('messages', {
+        text: this.newMessage,
+        microchat_id: this.chatId,
+        user_id: localStorage.getItem('microchatsToken')
       })
       if (res && res.data && res.data.data) {
         // this.items.push({

@@ -43,12 +43,6 @@ export default {
     async auth () {
       const res = await this.$axios('auth/login', {
         method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': '*',
-          'Access-Control-Allow-Methods': '*'
-        },
         data: {
           login: this.login,
           password: this.password

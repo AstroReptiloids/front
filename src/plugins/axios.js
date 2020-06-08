@@ -9,12 +9,11 @@ if (localStorage && localStorage.getItem('microchatsToken')) {
   axios.defaults.headers.common.Authorization = localStorage.getItem('microchatsToken')
 }
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-// headers: {
-// axios.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest'
-// axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
-// axios.defaults.headers.post['Access-Control-Allow-Headers'] = '*'
-// axios.defaults.headers.post['Access-Control-Allow-Methods'] = '*'
-// },
+
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
+axios.defaults.headers.common['Access-Control-Allow-Headers'] = '*'
+axios.defaults.headers.common['Access-Control-Allow-Methods'] = '*'
 
 const config = {
   baseURL: process.env.baseURL || process.env.apiUrl || 'http://localhost:3000'
