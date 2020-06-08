@@ -1,7 +1,7 @@
 <template>
     <v-app id="inspire">
-        <v-app-bar app flat>
-            <v-toolbar-title>Microchats</v-toolbar-title>
+        <v-app-bar app flat color="primary">
+            <v-toolbar-title class="white--text">Microchats</v-toolbar-title>
             <v-spacer></v-spacer>
             <slot name="toolbar_items"></slot>
         </v-app-bar>

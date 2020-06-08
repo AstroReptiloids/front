@@ -1,7 +1,6 @@
 <template>
   <v-row class="ma-0">
-    <v-col class="ma-0 fill-height" cols="3" v-if="chats" style="overflow-y: auto; height: calc(100vh - 152px);">
-
+    <v-col v-if="chats" class="pa-0 fill-height chat-list" cols="3">
       <v-list three-line>
         <v-list-item-group v-model="currentChat" color="primary" mandatory>
           <template v-for="(chat, i) in chats">
@@ -23,45 +22,49 @@
 
     </v-col>
 
-    <v-col v-if="items"
-           class="ma-0 fill-height"
-           cols="9"
-           style="overflow-y: auto; height: calc(100vh - 152px);"
-           id='messages-list'>
-      <v-row v-for="(item, i) of items"
-             :key="`item-${i}`"
-             class="ma-0"
-      >
-        <v-spacer v-if="isOwn(item)"/>
-        <v-card flat :class="`px-4 pb-4 pt-2 ma-4 ${isOwn(item) ? '' : 'no-'}my-message`">
-          <v-list-item class="mt-3">
-            <v-list-item-avatar>
-              <v-img :src="getUserAvatar(item.user)"></v-img>
-            </v-list-item-avatar>
+    <v-col cols="9" class="pa-0" style="height: calc(100vh - 64px);">
+      <v-row class="ma-0" style="background-color: #f8f8f8">
+      <v-col v-if="items"
+             class="pa-0 fill-height"
+             style="overflow-y: auto; height: calc(100vh - 152px);"
+             id='messages-list'>
+        <v-row v-for="(item, i) of items"
+               :key="`item-${i}`"
+               class="ma-0 py-4"
+        >
+          <v-spacer v-if="isOwn(item)"/>
+          <v-card flat :class="`px-4 pb-4 pt-2 ma-4 ${isOwn(item) ? '' : 'no-'}my-message`">
+            <v-list-item class="mt-3">
+              <v-list-item-avatar>
+                <v-img :src="getUserAvatar(item.user)"></v-img>
+              </v-list-item-avatar>
 
-            <v-list-item-content>
-              <v-list-item-title class="subtitle-2" v-html="`${item.user.first_name} ${item.user.last_name}`"></v-list-item-title>
-              <v-list-item-subtitle class="body-2" v-html="formatDateTime(item.user.createdAt)"></v-list-item-subtitle>
-            </v-list-item-content>
+              <v-list-item-content>
+                <v-list-item-title class="subtitle-2" v-html="`${item.user.first_name} ${item.user.last_name}`"></v-list-item-title>
+                <v-list-item-subtitle class="body-2" v-html="formatDateTime(item.user.createdAt)"></v-list-item-subtitle>
+              </v-list-item-content>
 
-    <!--        <v-list-item-action v-if="isOwn">-->
-    <!--          <v-btn icon x-small @click="removeFeed(i)">-->
-    <!--            <v-icon color="grey lighten-1" x-small>fa-trash</v-icon>-->
-    <!--          </v-btn>-->
-    <!--        </v-list-item-action>-->
+              <!--        <v-list-item-action v-if="isOwn">-->
+              <!--          <v-btn icon x-small @click="removeFeed(i)">-->
+              <!--            <v-icon color="grey lighten-1" x-small>fa-trash</v-icon>-->
+              <!--          </v-btn>-->
+              <!--        </v-list-item-action>-->
 
-          </v-list-item>
-          <v-card-text class="body-2"
-                       style="white-space: pre-wrap">
-            {{item.text}}
-          </v-card-text>
-          <v-spacer v-if="isNotOwn(item)"/>
-        </v-card>
+            </v-list-item>
+            <v-card-text class="body-2"
+                         style="white-space: pre-wrap">
+              {{item.text}}
+            </v-card-text>
+            <v-spacer v-if="isNotOwn(item)"/>
+          </v-card>
+        </v-row>
+
+        <div id="messages-end"/>
+
+      </v-col>
       </v-row>
 
-      <div id="messages-end"/>
-
-      <v-footer absolute padless>
+      <v-footer padless style="background-color: #fff">
         <v-row class="mx-8 my-4">
           <v-text-field v-model="newMessage"
                         rounded
@@ -72,12 +75,11 @@
           />
           <v-btn rounded
                  class="my-2"
-                 color="primary lighten-2"
+                 color="primary"
                  @click="send"
           >Отправить</v-btn>
         </v-row>
       </v-footer>
-
     </v-col>
   </v-row>
 </template>
@@ -98,7 +100,6 @@ export default {
     },
     currentUser: null,
     newMessage: '',
-    chatId: 'cd685366-9c2f-4e9d-ae0e-16731283129d',
     categoryId: '65a69740-ddab-4d26-b1dd-81c28fd3d877'
   }),
   computed: {
@@ -112,7 +113,9 @@ export default {
     await this.fetchCurrentUser()
     await this.fetchChats()
 
-    this.currentChat = 1
+    if (localStorage.getItem('microchatsCurrentChatIndex')) {
+      this.currentChat = parseInt(localStorage.getItem('microchatsCurrentChatIndex'))
+    }
     await this.fetchMessages()
 
     // await this.resetScrollMessages()
@@ -169,7 +172,7 @@ export default {
     async fetchMessages () {
       const res = await this.$axios.get('messages', {
         params: {
-          microchat_id: this.chatId
+          microchat_id: this.chats[this.currentChat].id
         }
       })
       if (res && res.data && res.data.data && res.data.data.messages) {
@@ -216,9 +219,9 @@ export default {
       }
       return colour
     },
-    async selectChat (chat) {
-      this.chatId = chat.id
+    async selectChat () {
       await this.fetchMessages()
+      localStorage.setItem('microchatsCurrentChatIndex', this.currentChat)
       // await this.resetScrollMessages()
       await this.scrollMessagesToEnd()
     },
@@ -229,7 +232,7 @@ export default {
 
       const res = await this.$axios.post('messages', {
         text: this.newMessage,
-        microchat_id: this.chatId,
+        microchat_id: this.chats[this.currentChat].id,
         user_id: localStorage.getItem('microchatsToken')
       })
       if (res && res.data && res.data.data) {
@@ -260,8 +263,15 @@ export default {
 </script>
 
 <style scoped>
+.chat-list {
+  -webkit-box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) !important;
+  overflow-y: auto;
+  height: calc(100vh - 64px);
+  z-index: 1;
+}
 .my-message {
-  border-radius: 4px 24px 0 24px !important;
+  border-radius: 24px 24px 0 24px !important;
   filter: drop-shadow(1px 3px 2px #00000030);
 }
 .my-message:after {
@@ -279,7 +289,7 @@ export default {
   margin-bottom: -1.5em;
 }
 .no-my-message {
-  border-radius: 24px 4px 24px 0 !important;
+  border-radius: 24px 24px 24px 0 !important;
   filter: drop-shadow(1px 3px 2px #00000030);
 }
 .no-my-message:before {
@@ -296,10 +306,4 @@ export default {
   margin-right: -0.75em;
   margin-bottom: -1.5em;
 }
-</style>
-
-<style>
-/*.footer-input.v-text-field--outlined fieldset {*/
-/*  border: none;*/
-/*}*/
 </style>
