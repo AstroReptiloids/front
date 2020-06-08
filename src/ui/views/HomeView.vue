@@ -23,37 +23,44 @@
 
     </v-col>
 
-    <v-col class="ma-0 fill-height" cols="9" v-if="items" style="overflow-y: auto; height: calc(100vh - 152px);">
-    <v-row v-for="(item, i) of items"
-           :key="`item-${i}`"
-           class="ma-0"
-    >
-      <v-spacer v-if="isOwn(item)"/>
-      <v-card flat :class="`px-4 pb-4 pt-2 ma-4 ${isOwn(item) ? '' : 'no-'}my-message`">
-        <v-list-item class="mt-3">
-          <v-list-item-avatar>
-            <v-img :src="getUserAvatar(item.user)"></v-img>
-          </v-list-item-avatar>
+    <v-col v-if="items"
+           class="ma-0 fill-height"
+           cols="9"
+           style="overflow-y: auto; height: calc(100vh - 152px);"
+           id='messages-list'>
+      <v-row v-for="(item, i) of items"
+             :key="`item-${i}`"
+             class="ma-0"
+      >
+        <v-spacer v-if="isOwn(item)"/>
+        <v-card flat :class="`px-4 pb-4 pt-2 ma-4 ${isOwn(item) ? '' : 'no-'}my-message`">
+          <v-list-item class="mt-3">
+            <v-list-item-avatar>
+              <v-img :src="getUserAvatar(item.user)"></v-img>
+            </v-list-item-avatar>
 
-          <v-list-item-content>
-            <v-list-item-title class="subtitle-2" v-html="`${item.user.first_name} ${item.user.last_name}`"></v-list-item-title>
-            <v-list-item-subtitle class="body-2" v-html="formatDateTime(item.user.createdAt)"></v-list-item-subtitle>
-          </v-list-item-content>
+            <v-list-item-content>
+              <v-list-item-title class="subtitle-2" v-html="`${item.user.first_name} ${item.user.last_name}`"></v-list-item-title>
+              <v-list-item-subtitle class="body-2" v-html="formatDateTime(item.user.createdAt)"></v-list-item-subtitle>
+            </v-list-item-content>
 
-  <!--        <v-list-item-action v-if="isOwn">-->
-  <!--          <v-btn icon x-small @click="removeFeed(i)">-->
-  <!--            <v-icon color="grey lighten-1" x-small>fa-trash</v-icon>-->
-  <!--          </v-btn>-->
-  <!--        </v-list-item-action>-->
+    <!--        <v-list-item-action v-if="isOwn">-->
+    <!--          <v-btn icon x-small @click="removeFeed(i)">-->
+    <!--            <v-icon color="grey lighten-1" x-small>fa-trash</v-icon>-->
+    <!--          </v-btn>-->
+    <!--        </v-list-item-action>-->
 
-        </v-list-item>
-        <v-card-text class="body-2"
-                     style="white-space: pre-wrap">
-          {{item.text}}
-        </v-card-text>
-        <v-spacer v-if="isNotOwn(item)"/>
-      </v-card>
-    </v-row>
+          </v-list-item>
+          <v-card-text class="body-2"
+                       style="white-space: pre-wrap">
+            {{item.text}}
+          </v-card-text>
+          <v-spacer v-if="isNotOwn(item)"/>
+        </v-card>
+      </v-row>
+
+      <div id="messages-end"/>
+
       <v-footer absolute padless>
         <v-row class="mx-8 my-4">
           <v-text-field v-model="newMessage"
@@ -104,10 +111,15 @@ export default {
   },
   async created () {
     this.connectWebSockets()
+
     await this.fetchCurrentUser()
     await this.fetchChats()
+
     this.currentChat = 1
     await this.fetchMessages()
+
+    await this.resetScrollMessages()
+    await this.scrollMessagesToEnd()
   },
   methods: {
     isOwn (item) {
@@ -223,6 +235,8 @@ export default {
     async selectChat (chat) {
       this.chatId = chat.id
       await this.fetchMessages()
+      await this.resetScrollMessages()
+      await this.scrollMessagesToEnd()
     },
     async send () {
       if (!this.newMessage) {
@@ -250,12 +264,21 @@ export default {
         })
         this.newMessage = ''
 
-        await this.$vuetify.goTo(this.$refs.chatEnd, {
-          duration: 300,
-          offset: 0,
-          easing: 'easeInOutCubic'
-        })
+        await this.scrollMessagesToEnd()
       }
+    },
+    async resetScrollMessages () {
+      await this.$vuetify.goTo('#messages-list', {
+        container: '#messages-list'
+      })
+    },
+    async scrollMessagesToEnd () {
+      await this.$vuetify.goTo('#messages-end', {
+        duration: 300,
+        offset: 0,
+        easing: 'easeInOutCubic',
+        container: '#messages-list'
+      })
     }
   }
 }
